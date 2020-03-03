@@ -145,13 +145,11 @@ export PYTHONPATH=`pwd`:$PYTHONPATH
 安装的几个坑：
 1.pip install "git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI"出现了无法访问https://github.com/cocodataset/cocoapi.git的情况
 方法：下载https://github.com/cocodataset/cocoapi.git后手动安装：
-# COCOAPI=/path/to/clone/cocoapi
+COCOAPI=/path/to/clone/cocoapi
 git clone https://github.com/cocodataset/cocoapi.git $COCOAPI
 cd $COCOAPI/PythonAPI
-# Install into global site-packages
 make install
-# Alternatively, if you do not have permissions or prefer
-# not to install the COCO API into global site-packages
+
 python setup.py install --user
 
 2.安装cocoapi出现了找不到_mask.c的问题:
