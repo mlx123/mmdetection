@@ -140,3 +140,53 @@ Or run the following command in the terminal of corresponding folder to temporal
 ```shell
 export PYTHONPATH=`pwd`:$PYTHONPATH
 ```
+
+#MLX补充
+安装的几个坑：
+1.pip install "git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI"出现了无法访问https://github.com/cocodataset/cocoapi.git的情况
+方法：下载https://github.com/cocodataset/cocoapi.git后手动安装：
+# COCOAPI=/path/to/clone/cocoapi
+git clone https://github.com/cocodataset/cocoapi.git $COCOAPI
+cd $COCOAPI/PythonAPI
+# Install into global site-packages
+make install
+# Alternatively, if you do not have permissions or prefer
+# not to install the COCO API into global site-packages
+python setup.py install --user
+
+2.安装cocoapi出现了找不到_mask.c的问题:
+安装cpython: pip install cython --user
+
+3.执行pip install -v -e .提示找不到CUDA
+在安装pytoch时将conda install pytorch torchvision -c pytorch替换为conda install pytorch torchvision==0.2.2 cuda90 cudatoolkit=9.0 -y
+4.安装前注意检查和设置gcc为满足的版本
+vim ~/.bashrc
+PATH="/mnt/lustre/share/gcc/gcc-5.3.0/bin:$PATH"
+export CC="/mnt/lustre/share/gcc/gcc-5.3.0/bin/gcc"
+export CXX="/mnt/lustre/share/gcc/gcc-5.3.0/bin/g++"
+6.各个库的版本需要注意
+addict          2.2.1               
+certifi         2019.11.28          
+cffi            1.13.2              
+cycler          0.10.0              
+Cython          0.29.15             
+kiwisolver      1.1.0               
+matplotlib      3.2.0rc3            
+mmcv            0.3.2               
+mmdet           1.1.0+51df8a9       /mnt/lustre/menglingxuan/mmdetection/mmdetection
+numpy           1.18.1              
+olefile         0.46                
+opencv-python   4.2.0.32            
+Pillow          6.2.2               
+pip             20.0.2              
+pycocotools     2.0                 
+pycparser       2.19                
+pyparsing       2.4.6               
+python-dateutil 2.8.1               
+PyYAML          5.3                 
+setuptools      45.2.0.post20200209 
+six             1.14.0              
+terminaltables  3.1.0               
+torch           1.1.0               
+torchvision     0.2.2               
+wheel           0.34.2  
