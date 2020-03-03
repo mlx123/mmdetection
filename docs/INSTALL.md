@@ -188,3 +188,11 @@ terminaltables  3.1.0
 torch           1.1.0               
 torchvision     0.2.2               
 wheel           0.34.2  
+
+7.编译时所用的cuda与运行时的cuda和pytorch对应的cuda要一致
+在.bashrc中设置cuda的地址：
+CUDA_HOME='/mnt/lustre/share/cuda-9.0'
+export CUDA_HOME='/mnt/lustre/share/cuda-9.0'
+export PATH="$PATH:$CUDA_HOME/bin"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CUDA_HOME/lib64/"
+export LIBRARY_PATH="$LIBRARY_PATH:$CUDA_HOME/lib64"  
