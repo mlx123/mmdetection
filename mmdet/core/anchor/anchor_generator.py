@@ -1,4 +1,23 @@
 import torch
+import numpy as np
+def _mkanchors(ws, hs, x_ctr, y_ctr):
+    """
+    given a vector of widths (ws) and heights (hs) around a center
+    (x_ctr, y_ctr), output a set of anchors (windows).
+    """
+    ws = ws[:, np.newaxis]
+    hs = hs[:, np.newaxis]
+    anchors = np.hstack((x_ctr - 0.5 * (ws - 1), y_ctr - 0.5 * (hs - 1),
+                         x_ctr + 0.5 * (ws - 1), y_ctr + 0.5 * (hs - 1)))
+    anchors=torch.from_numpy(anchors).type(torch.float32)
+    return anchors
+
+def load_anchors_over_grid(whs, stride):
+    ws = whs[:, 0]
+    hs = whs[:, 1]
+    x_ctr = (stride - 1) / 2
+    y_ctr = (stride - 1) / 2
+    return _mkanchors(ws, hs, x_ctr, y_ctr)
 
 
 class AnchorGenerator(object):
@@ -14,13 +33,16 @@ class AnchorGenerator(object):
                 [16., 16., 24., 24.]])
     """
 
-    def __init__(self, base_size, scales, ratios, scale_major=True, ctr=None):
+    def __init__(self, base_size, scales, ratios, scale_major=True, ctr=None,pre_defined_anchors=None):
         self.base_size = base_size
-        self.scales = torch.Tensor(scales)
-        self.ratios = torch.Tensor(ratios)
-        self.scale_major = scale_major
-        self.ctr = ctr
-        self.base_anchors = self.gen_base_anchors()
+        if pre_defined_anchors is None:
+            self.scales = torch.Tensor(scales)
+            self.ratios = torch.Tensor(ratios)
+            self.scale_major = scale_major
+            self.ctr = ctr
+            self.base_anchors = self.gen_base_anchors()
+        else:
+            self.base_anchors = load_anchors_over_grid(np.array(pre_defined_anchors), self.base_size)
 
     @property
     def num_base_anchors(self):
@@ -96,3 +118,17 @@ class AnchorGenerator(object):
                       None].expand(valid.size(0),
                                    self.num_base_anchors).contiguous().view(-1)
         return valid
+
+
+
+
+
+
+if __name__ == '__main__':
+    self = AnchorGenerator(8,[8,2], [0.5])#生成self.base_anchors，其形状为[8,N]
+    all_anchors = self.grid_anchors((5, 5), device='cpu')
+    print(all_anchors)
+
+    self = AnchorGenerator(base_size=8,scales=None, ratios=None, pre_defined_anchors=np.array([[10,5],[20,10],[15,25]]))#生成self.base_anchors，其形状为[8,N]
+    all_anchors = self.grid_anchors((5, 5), device='cpu')
+    print(all_anchors)

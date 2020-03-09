@@ -38,6 +38,7 @@ class AnchorHead(nn.Module):
                  anchor_ratios=[0.5, 1.0, 2.0],
                  anchor_strides=[4, 8, 16, 32, 64],
                  anchor_base_sizes=None,
+                 pre_defined_anchors=None,
                  target_means=(.0, .0, .0, .0),
                  target_stds=(1.0, 1.0, 1.0, 1.0),
                  loss_cls=dict(
@@ -53,6 +54,7 @@ class AnchorHead(nn.Module):
         self.anchor_scales = anchor_scales
         self.anchor_ratios = anchor_ratios
         self.anchor_strides = anchor_strides
+        self.pre_defined_anchors =pre_defined_anchors
         self.anchor_base_sizes = list(
             anchor_strides) if anchor_base_sizes is None else anchor_base_sizes
         self.target_means = target_means
@@ -73,11 +75,17 @@ class AnchorHead(nn.Module):
         self.fp16_enabled = False
 
         self.anchor_generators = []
+        import pdb
+        pdb.set_trace()
         for anchor_base in self.anchor_base_sizes:
             self.anchor_generators.append(
-                AnchorGenerator(anchor_base, anchor_scales, anchor_ratios))
-
-        self.num_anchors = len(self.anchor_ratios) * len(self.anchor_scales)
+                AnchorGenerator(anchor_base, anchor_scales, anchor_ratios,pre_defined_anchors=self.pre_defined_anchors))
+        
+        
+        print(self.anchor_generators[0].base_anchors[0:2])
+        #self.num_anchors = len(self.anchor_ratios) * len(self.anchor_scales)
+        self.num_anchors = self.anchor_generators[0].base_anchors.shape[0]
+        print(self.num_anchors)
         self._init_layers()
 
     def _init_layers(self):
